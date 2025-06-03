@@ -16,12 +16,10 @@ public class Main {
         StoreService storeService = new StoreService();
         ReceiptService receiptService = new ReceiptService();
 
-        // ➡️ Само веднъж! Ако разходите са 0, значи още не са добавени началните разходи за склад
         if (storeService.calculateCosts() == 0) {
             storeService.addInitialStockCostsOnce();
         }
 
-        // Примерно зареждане на продукти (ако ги няма вече)
         if (!storeService.getProducts().containsKey("P001")) {
             Product milk = new Product("P001", "Прясно мляко", 1.20, ProductCategory.FOOD, LocalDate.now().plusDays(3), 10);
             storeService.loadProduct(milk);
@@ -32,7 +30,7 @@ public class Main {
             storeService.loadProduct(soap);
         }
 
-        // Назначаване на касиер (ако още няма)
+        // Назначаване на касиер
         if (!storeService.getCashiers().containsKey(1)) {
             Cashier cashier = new Cashier("C001", "Иван Иванов", 1200.00);
             storeService.assignCashierToRegister(1, cashier);
@@ -55,7 +53,6 @@ public class Main {
             System.err.println("Грешка при продажбата: " + e.getMessage());
         }
 
-        // Печат на статистики
         System.out.println("\nОборот: " + storeService.calculateRevenue() + " лв.");
         System.out.println("Разходи: " + storeService.calculateCosts() + " лв.");
         System.out.println("Печалба: " + storeService.calculateProfit() + " лв.");

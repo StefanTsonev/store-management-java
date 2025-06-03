@@ -20,7 +20,7 @@ public class Receipt implements Serializable {
         this.issuedAt = LocalDateTime.now();
         this.items = items;
         this.total = calculateTotal();
-        saveLastNumberToFile(this.number); // запазваме новия номер
+        saveLastNumberToFile(this.number);
     }
 
     private double calculateTotal() {

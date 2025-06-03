@@ -13,7 +13,6 @@ public class StoreDataManager {
     private static final String PRODUCTS_FILE = "store/products.ser";
     private static final String FINANCE_FILE = "store/finance.txt";
 
-    // Създаване на папка "store" ако я няма
     private static void ensureStoreDirectory() {
         File storeDir = new File("store");
         if (!storeDir.exists()) {

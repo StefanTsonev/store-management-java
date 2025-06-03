@@ -20,7 +20,6 @@ public class Product implements Serializable{
         this.quantity = quantity;
     }
 
-    // Гетъри и сетъри
     public String getId() { return id; }
     public String getName() { return name; }
     public double getDeliveryPrice() { return deliveryPrice; }

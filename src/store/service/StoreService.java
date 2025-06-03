@@ -80,7 +80,6 @@ public class StoreService {
 
         totalRevenue += receipt.getTotal();
 
-        // Прибавяне на заплати на всеки 30-ти ден
         long daysSinceLastSalary = ChronoUnit.DAYS.between(lastSalaryDate, LocalDate.now());
         if (daysSinceLastSalary >= 30) {
             double salaryCost = cashiersByRegister.values().stream()
@@ -132,7 +131,6 @@ public class StoreService {
         return round(totalRevenue - totalCosts);
     }
 
-    // ➡️ Добавен метод: връща броя на бележките от last_number.txt
     public int getReceiptCount() {
         try (BufferedReader reader = new BufferedReader(new FileReader("receipts/last_number.txt"))) {
             return Integer.parseInt(reader.readLine());
@@ -141,7 +139,6 @@ public class StoreService {
         }
     }
 
-    // ➡️ Еднократно добавяне на начални разходи за склада
     public void addInitialStockCostsOnce() {
         double stockCost = products.values().stream()
                 .mapToDouble(p -> p.getDeliveryPrice() * p.getQuantity())

@@ -6,7 +6,6 @@ import store.exceptions.InsufficientQuantityException;
 import store.model.*;
 import store.service.ReceiptService;
 import store.service.StoreService;
-import store.util.StoreDataManager;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -17,7 +16,12 @@ public class Main {
         StoreService storeService = new StoreService();
         ReceiptService receiptService = new ReceiptService();
 
-        // Добавяне на продукти (само ако ги няма)
+        // ➡️ Само веднъж! Ако разходите са 0, значи още не са добавени началните разходи за склад
+        if (storeService.calculateCosts() == 0) {
+            storeService.addInitialStockCostsOnce();
+        }
+
+        // Примерно зареждане на продукти (ако ги няма вече)
         if (!storeService.getProducts().containsKey("P001")) {
             Product milk = new Product("P001", "Прясно мляко", 1.20, ProductCategory.FOOD, LocalDate.now().plusDays(3), 10);
             storeService.loadProduct(milk);
@@ -28,16 +32,16 @@ public class Main {
             storeService.loadProduct(soap);
         }
 
-        // Добавяне на касиер (ако го няма)
+        // Назначаване на касиер (ако още няма)
         if (!storeService.getCashiers().containsKey(1)) {
             Cashier cashier = new Cashier("C001", "Иван Иванов", 1200.00);
             storeService.assignCashierToRegister(1, cashier);
         }
 
-        // Примерна продажба
+        // Продажба
         Map<String, Integer> cart = new HashMap<>();
-        cart.put("P001", 2); // 2 млека
-        cart.put("P002", 1); // 1 сапун
+        cart.put("P001", 1);
+        cart.put("P002", 2);
 
         try {
             Receipt receipt = storeService.sellProducts(1, cart);
@@ -51,7 +55,7 @@ public class Main {
             System.err.println("Грешка при продажбата: " + e.getMessage());
         }
 
-        // Информация
+        // Печат на статистики
         System.out.println("\nОборот: " + storeService.calculateRevenue() + " лв.");
         System.out.println("Разходи: " + storeService.calculateCosts() + " лв.");
         System.out.println("Печалба: " + storeService.calculateProfit() + " лв.");

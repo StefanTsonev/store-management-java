@@ -6,6 +6,9 @@ import store.exceptions.InsufficientQuantityException;
 import store.model.*;
 import store.util.StoreDataManager;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -13,8 +16,6 @@ import java.util.*;
 public class StoreService {
     private Map<String, Product> products;
     private Map<Integer, Cashier> cashiersByRegister;
-    private List<Receipt> receipts = new ArrayList<>();
-
     private double foodMarkupPercent = 0.2;
     private double nonFoodMarkupPercent = 0.3;
     private int expirationThresholdDays = 5;
@@ -22,9 +23,7 @@ public class StoreService {
 
     private double totalRevenue;
     private double totalCosts;
-
     private LocalDate lastSalaryDate = LocalDate.now();
-    private boolean initialProductCostAdded = false;
 
     public StoreService() {
         this.products = StoreDataManager.loadProducts();
@@ -78,18 +77,8 @@ public class StoreService {
         }
 
         Receipt receipt = new Receipt(cashier, items);
-        receipts.add(receipt);
 
         totalRevenue += receipt.getTotal();
-
-        // Еднократно добавяне на складови разходи
-        if (!initialProductCostAdded) {
-            double stockCost = products.values().stream()
-                    .mapToDouble(p -> p.getDeliveryPrice() * p.getQuantity())
-                    .sum();
-            totalCosts += stockCost;
-            initialProductCostAdded = true;
-        }
 
         // Прибавяне на заплати на всеки 30-ти ден
         long daysSinceLastSalary = ChronoUnit.DAYS.between(lastSalaryDate, LocalDate.now());
@@ -123,20 +112,12 @@ public class StoreService {
         return Math.round(value * 100.0) / 100.0;
     }
 
-    public List<Receipt> getReceipts() {
-        return receipts;
-    }
-
     public Map<String, Product> getProducts() {
         return products;
     }
 
     public Map<Integer, Cashier> getCashiers() {
         return cashiersByRegister;
-    }
-
-    public int getReceiptCount() {
-        return receipts.size();
     }
 
     public double calculateRevenue() {
@@ -149,5 +130,23 @@ public class StoreService {
 
     public double calculateProfit() {
         return round(totalRevenue - totalCosts);
+    }
+
+    // ➡️ Добавен метод: връща броя на бележките от last_number.txt
+    public int getReceiptCount() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("receipts/last_number.txt"))) {
+            return Integer.parseInt(reader.readLine());
+        } catch (IOException e) {
+            return 0;
+        }
+    }
+
+    // ➡️ Еднократно добавяне на начални разходи за склада
+    public void addInitialStockCostsOnce() {
+        double stockCost = products.values().stream()
+                .mapToDouble(p -> p.getDeliveryPrice() * p.getQuantity())
+                .sum();
+        totalCosts += stockCost;
+        StoreDataManager.saveFinance(round(totalRevenue), round(totalCosts));
     }
 }

@@ -21,12 +21,12 @@ public class Main {
         }
 
         if (!storeService.getProducts().containsKey("P001")) {
-            Product milk = new Product("P001", "Прясно мляко", 1.20, ProductCategory.FOOD, LocalDate.now().plusDays(3), 10);
+            Product milk = new Product("P001", "Яйца", 2.20, ProductCategory.FOOD, LocalDate.now().plusDays(7), 10);
             storeService.loadProduct(milk);
         }
 
         if (!storeService.getProducts().containsKey("P002")) {
-            Product soap = new Product("P002", "Сапун", 0.80, ProductCategory.NON_FOOD, LocalDate.now().plusDays(365), 20);
+            Product soap = new Product("P002", "Кухненска хартия", 1.80, ProductCategory.NON_FOOD, LocalDate.now().plusDays(365), 20);
             storeService.loadProduct(soap);
         }
 

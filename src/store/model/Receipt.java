@@ -2,6 +2,7 @@ package store.model;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Receipt implements Serializable {
@@ -20,7 +21,7 @@ public class Receipt implements Serializable {
         this.issuedAt = LocalDateTime.now();
         this.items = items;
         this.total = calculateTotal();
-        saveLastNumberToFile(this.number);
+        saveLastNumberToFile(this.number); // запазваме новия номер
     }
 
     private double calculateTotal() {
@@ -57,7 +58,9 @@ public class Receipt implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("КАСОВА БЕЛЕЖКА №").append(number).append("\n");
         sb.append("Касиер: ").append(cashier.getName()).append("\n");
-        sb.append("Дата: ").append(issuedAt).append("\n");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = issuedAt.format(formatter);
+        sb.append("Дата: ").append(formattedDate).append("\n");
         sb.append("Продукти:\n");
         for (ReceiptItem item : items) {
             sb.append("  - ").append(item).append("\n");
